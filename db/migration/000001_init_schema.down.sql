@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS shop_categories;
+DROP TABLE IF EXISTS shops;
+DROP TABLE IF EXISTS shop_members;
+DROP TABLE IF EXISTS post_categories;
+DROP TABLE IF EXISTS shop_reports;
+DROP TABLE IF EXISTS post_reports;
+DROP TABLE IF EXISTS shops_shop_reports;
+DROP TABLE IF EXISTS posts_post_reports;
+DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS post_change_histories;
+DROP TABLE IF EXISTS post_comments;
+DROP TABLE IF EXISTS post_reply_comments;
+DROP TABLE IF EXISTS posts_saved;
