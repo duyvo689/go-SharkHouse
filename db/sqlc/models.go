@@ -34,16 +34,16 @@ type Post struct {
 	PostType       string       `json:"post_type"`
 	ExpirationDate sql.NullTime `json:"expiration_date"`
 	// active, unactive, delete
-	Status    string       `json:"status"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type PostCategory struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
 	// active, unactive, delete
-	Status    string       `json:"status"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type PostChangeHistory struct {
@@ -55,8 +55,8 @@ type PostChangeHistory struct {
 	OldNote    sql.NullString `json:"old_note"`
 	NewNote    sql.NullString `json:"new_note"`
 	// active, unactive, delete
-	Status    string       `json:"status"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type PostComment struct {
@@ -66,8 +66,8 @@ type PostComment struct {
 	CommentContent sql.NullString `json:"comment_content"`
 	StarRating     sql.NullInt32  `json:"star_rating"`
 	// active, delete
-	Status    string       `json:"status"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type PostReplyComment struct {
@@ -77,31 +77,31 @@ type PostReplyComment struct {
 	PostCommentID  int64  `json:"post_comment_id"`
 	CommentContent string `json:"comment_content"`
 	// active, delete
-	Status    string       `json:"status"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type PostReport struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
 	// active, unactive, delete
-	Status    string       `json:"status"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type PostsPostReport struct {
-	ID           int64        `json:"id"`
-	UserID       int64        `json:"user_id"`
-	PostID       int64        `json:"post_id"`
-	PostReportID int64        `json:"post_report_id"`
-	CreatedAt    sql.NullTime `json:"created_at"`
+	ID           int64     `json:"id"`
+	UserID       int64     `json:"user_id"`
+	PostID       int64     `json:"post_id"`
+	PostReportID int64     `json:"post_report_id"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 type PostsSaved struct {
-	ID        int64        `json:"id"`
-	UserID    int64        `json:"user_id"`
-	PostID    int64        `json:"post_id"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	ID        int64     `json:"id"`
+	UserID    int64     `json:"user_id"`
+	PostID    int64     `json:"post_id"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type Shop struct {
@@ -120,17 +120,17 @@ type Shop struct {
 	// active, unactive, delete
 	Status string `json:"status"`
 	// normal, stop
-	AdminStatus       string       `json:"admin_status"`
-	ShopnameChangedAt time.Time    `json:"shopname_changed_at"`
-	CreatedAt         sql.NullTime `json:"created_at"`
+	AdminStatus       string    `json:"admin_status"`
+	ShopnameChangedAt time.Time `json:"shopname_changed_at"`
+	CreatedAt         time.Time `json:"created_at"`
 }
 
 type ShopCategory struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
 	// active, unactive, delete
-	Status    string       `json:"status"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ShopMember struct {
@@ -140,24 +140,24 @@ type ShopMember struct {
 	// view, edit
 	MemberRole string `json:"member_role"`
 	// active, delete
-	Status    string       `json:"status"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ShopReport struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
 	// active, unactive, delete
-	Status    string       `json:"status"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type ShopsShopReport struct {
-	ID           int64        `json:"id"`
-	UserID       int64        `json:"user_id"`
-	ShopID       int64        `json:"shop_id"`
-	ShopReportID int64        `json:"shop_report_id"`
-	CreatedAt    sql.NullTime `json:"created_at"`
+	ID           int64     `json:"id"`
+	UserID       int64     `json:"user_id"`
+	ShopID       int64     `json:"shop_id"`
+	ShopReportID int64     `json:"shop_report_id"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 type User struct {
@@ -169,5 +169,5 @@ type User struct {
 	HashedPassword    string         `json:"hashed_password"`
 	UserRole          string         `json:"user_role"`
 	PasswordChangedAt time.Time      `json:"password_changed_at"`
-	CreatedAt         sql.NullTime   `json:"created_at"`
+	CreatedAt         time.Time      `json:"created_at"`
 }

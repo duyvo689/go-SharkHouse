@@ -3,18 +3,18 @@ CREATE TABLE "users" (
   "full_name" varchar NOT NULL,
   "avatar" varchar,
   "email" varchar UNIQUE NOT NULL,
-  "phone" varchar NOT NULL,
+  "phone" varchar UNIQUE NOT NULL,
   "hashed_password" varchar NOT NULL,
   "user_role" varchar NOT NULL DEFAULT 'user',
   "password_changed_at" timestamp NOT NULL DEFAULT '0001-01-01 00:00:00Z',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "shop_categories" (
   "id" bigserial PRIMARY KEY,
   "name" varchar NOT NULL,
   "status" varchar NOT NULL DEFAULT 'active',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "shops" (
@@ -32,7 +32,7 @@ CREATE TABLE "shops" (
   "status" varchar NOT NULL DEFAULT 'active',
   "admin_status" varchar NOT NULL DEFAULT 'normal',
   "shopname_changed_at" timestamp NOT NULL DEFAULT '0001-01-01 00:00:00Z',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "shop_members" (
@@ -41,28 +41,28 @@ CREATE TABLE "shop_members" (
   "shop_id" bigint NOT NULL,
   "member_role" varchar NOT NULL DEFAULT 'view',
   "status" varchar NOT NULL DEFAULT 'active',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "post_categories" (
   "id" bigserial PRIMARY KEY,
   "name" varchar NOT NULL,
   "status" varchar NOT NULL DEFAULT 'active',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "shop_reports" (
   "id" bigserial PRIMARY KEY,
   "name" varchar NOT NULL,
   "status" varchar NOT NULL DEFAULT 'active',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "post_reports" (
   "id" bigserial PRIMARY KEY,
   "name" varchar NOT NULL,
   "status" varchar NOT NULL DEFAULT 'active',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "shops_shop_reports" (
@@ -70,7 +70,7 @@ CREATE TABLE "shops_shop_reports" (
   "user_id" bigint NOT NULL,
   "shop_id" bigint NOT NULL,
   "shop_report_id" bigint NOT NULL,
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "posts_post_reports" (
@@ -78,7 +78,7 @@ CREATE TABLE "posts_post_reports" (
   "user_id" bigint NOT NULL,
   "post_id" bigint NOT NULL,
   "post_report_id" bigint NOT NULL,
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "posts" (
@@ -103,7 +103,7 @@ CREATE TABLE "posts" (
   "post_type" varchar NOT NULL DEFAULT 'time',
   "expiration_date" timestamp,
   "status" varchar NOT NULL DEFAULT 'active',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "post_change_histories" (
@@ -115,7 +115,7 @@ CREATE TABLE "post_change_histories" (
   "old_note" varchar,
   "new_note" varchar,
   "status" varchar NOT NULL DEFAULT 'active',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "post_comments" (
@@ -125,7 +125,7 @@ CREATE TABLE "post_comments" (
   "comment_content" varchar,
   "star_rating" integer DEFAULT 0,
   "status" varchar NOT NULL DEFAULT 'active',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "post_reply_comments" (
@@ -135,14 +135,14 @@ CREATE TABLE "post_reply_comments" (
   "post_comment_id" bigint NOT NULL,
   "comment_content" varchar NOT NULL,
   "status" varchar NOT NULL DEFAULT 'active',
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "posts_saved" (
   "id" bigserial PRIMARY KEY,
   "user_id" bigint NOT NULL,
   "post_id" bigint NOT NULL,
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp NOT NULL DEFAULT (now())
 );
 
 CREATE INDEX ON "shops" ("owner_id");

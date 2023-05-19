@@ -4,9 +4,10 @@ INSERT INTO users (
     phone,
     avatar,
     full_name,
-    hashed_password
+    hashed_password,
+    user_role
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 ) RETURNING *;
 
 -- name: GetUser :one

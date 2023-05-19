@@ -16,9 +16,10 @@ INSERT INTO users (
     phone,
     avatar,
     full_name,
-    hashed_password
+    hashed_password,
+    user_role
 ) VALUES (
-    $1, $2, $3, $4, $5
+    $1, $2, $3, $4, $5, $6
 ) RETURNING id, full_name, avatar, email, phone, hashed_password, user_role, password_changed_at, created_at
 `
 
@@ -28,6 +29,7 @@ type CreateUserParams struct {
 	Avatar         sql.NullString `json:"avatar"`
 	FullName       string         `json:"full_name"`
 	HashedPassword string         `json:"hashed_password"`
+	UserRole       string         `json:"user_role"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -37,6 +39,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Avatar,
 		arg.FullName,
 		arg.HashedPassword,
+		arg.UserRole,
 	)
 	var i User
 	err := row.Scan(
