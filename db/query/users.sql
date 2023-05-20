@@ -14,13 +14,19 @@ INSERT INTO users (
 SELECT * FROM users
 WHERE id = $1 LIMIT 1;
 
+-- name: ListUser :many
+SELECT * FROM users
+ORDER BY created_at DESC
+LIMIT $1
+OFFSET $2;
+
 -- name: UpdateUser :one
 UPDATE users 
 SET 
-    email = $2,
-    phone = $3,
-    avatar = $4,
-    full_name = $5,
-    user_role = $6
-WHERE id = $1
+    email = COALESCE(sqlc.narg(email), email),
+    phone = COALESCE(sqlc.narg(phone), phone),
+    avatar = COALESCE(sqlc.narg(avatar), avatar),
+    full_name = COALESCE(sqlc.narg(full_name), full_name),
+    user_role = COALESCE(sqlc.narg(user_role), user_role)
+WHERE id = sqlc.arg(id)
 RETURNING *;
