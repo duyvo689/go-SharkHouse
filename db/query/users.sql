@@ -2,17 +2,21 @@
 INSERT INTO users (
     email,
     phone,
-    avatar,
     full_name,
-    hashed_password,
-    user_role
+    hashed_password
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: GetUser :one
 SELECT * FROM users
 WHERE id = $1 LIMIT 1;
+
+-- name: GetUserByPhone :one
+SELECT *
+FROM users
+WHERE phone = $1
+LIMIT 1;
 
 -- name: ListUser :many
 SELECT * FROM users

@@ -3,19 +3,41 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"time"
 
 	db "github.com/duyvo689/sharkhome/db/sqlc"
+	"github.com/duyvo689/sharkhome/util"
 	"github.com/gin-gonic/gin"
 	"github.com/lib/pq"
 )
 
 type createUserRequest struct {
-	Email          string         `json:"email" binding:"required,email"`
-	Phone          string         `json:"phone" binding:"required,len=10,startswith=0"`
-	Avatar         sql.NullString `json:"avatar" binding:"url,startswith=http"`
-	FullName       string         `json:"full_name" binding:"required"`
-	HashedPassword string         `json:"hashed_password" binding:"required"`
-	UserRole       string         `json:"user_role" binding:"oneof: user admin"`
+	Email    string `json:"email" binding:"required,email"`
+	Phone    string `json:"phone" binding:"required,len=10,startswith=0"`
+	FullName string `json:"full_name" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type userResponse struct {
+	ID                int64          `json:"id"`
+	Email             string         `json:"email"`
+	Phone             string         `json:"phone"`
+	FullName          string         `json:"full_name"`
+	PasswordChangedAt time.Time      `json:"password_changed_at"`
+	CreatedAt         time.Time      `json:"created_at"`
+	Avatar            sql.NullString `json:"avatar"`
+}
+
+func newUserResponse(user db.User) userResponse {
+	return userResponse{
+		ID:                user.ID,
+		Email:             user.Email,
+		Phone:             user.Phone,
+		FullName:          user.FullName,
+		Avatar:            user.Avatar,
+		PasswordChangedAt: user.PasswordChangedAt,
+		CreatedAt:         user.CreatedAt,
+	}
 }
 
 func (server *Server) createUser(ctx *gin.Context) {
@@ -26,18 +48,21 @@ func (server *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	if req.UserRole == "" {
-		req.UserRole = "user"
+
+	hashedPassword, err := util.HashedPassword(req.Password)
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
+
 	arg := db.CreateUserParams{
 		Email:          req.Email,
 		Phone:          req.Phone,
-		Avatar:         req.Avatar,
 		FullName:       req.FullName,
-		HashedPassword: req.HashedPassword,
-		UserRole:       req.UserRole,
+		HashedPassword: hashedPassword,
 	}
-	account, err := server.store.CreateUser(ctx, arg)
+	user, err := server.store.CreateUser(ctx, arg)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Code.Name() {
@@ -49,8 +74,54 @@ func (server *Server) createUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+	rsp := newUserResponse(user)
 
-	ctx.JSON(http.StatusOK, account)
+	ctx.JSON(http.StatusOK, rsp)
+}
+
+type loginUserRequest struct {
+	Password string `json:"password" binding:"required,min=6"`
+	Phone    string `json:"phone" binding:"required,len=10,startswith=0"`
+}
+
+type loginUserResponse struct {
+	AccessToken string       `json:"access_token"`
+	User        userResponse `json:"user"`
+}
+
+func (server *Server) loginUser(ctx *gin.Context) {
+	var req loginUserRequest
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	user, err := server.store.GetUserByPhone(ctx, req.Phone)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	err = util.CheckPassword(user.HashedPassword, req.Password)
+
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err)) //401 không đươc uỷ quyền
+		return
+	}
+
+	accessToken, err := server.tokenMaker.CreateToken(user.FullName, server.config.AccessTokenDuration)
+
+	rsp := loginUserResponse{
+		AccessToken: accessToken,
+		User:        newUserResponse(user),
+	}
+
+	ctx.JSON(http.StatusOK, rsp) //200
 }
 
 type getUserRequest struct {
@@ -76,7 +147,8 @@ func (server *Server) getUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, user)
+	rsp := newUserResponse(user)
+	ctx.JSON(http.StatusOK, rsp)
 }
 
 type updateUserRequest struct {
@@ -120,8 +192,8 @@ func (server *Server) updateUser(ctx *gin.Context) {
 }
 
 type listUserRequest struct {
-	PageID   int32 `from:"page_id" binding:"required,min=1"`
-	PageSize int32 `from:"page_size" binding:"required,min=10,max=100"`
+	PageID   int32 `form:"page_id" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=10,max=100"`
 }
 
 func (server *Server) listUser(ctx *gin.Context) {

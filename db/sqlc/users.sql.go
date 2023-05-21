@@ -14,32 +14,26 @@ const createUser = `-- name: CreateUser :one
 INSERT INTO users (
     email,
     phone,
-    avatar,
     full_name,
-    hashed_password,
-    user_role
+    hashed_password
 ) VALUES (
-    $1, $2, $3, $4, $5, $6
+    $1, $2, $3, $4
 ) RETURNING id, full_name, avatar, email, phone, hashed_password, user_role, password_changed_at, created_at
 `
 
 type CreateUserParams struct {
-	Email          string         `json:"email"`
-	Phone          string         `json:"phone"`
-	Avatar         sql.NullString `json:"avatar"`
-	FullName       string         `json:"full_name"`
-	HashedPassword string         `json:"hashed_password"`
-	UserRole       string         `json:"user_role"`
+	Email          string `json:"email"`
+	Phone          string `json:"phone"`
+	FullName       string `json:"full_name"`
+	HashedPassword string `json:"hashed_password"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.Email,
 		arg.Phone,
-		arg.Avatar,
 		arg.FullName,
 		arg.HashedPassword,
-		arg.UserRole,
 	)
 	var i User
 	err := row.Scan(
@@ -63,6 +57,30 @@ WHERE id = $1 LIMIT 1
 
 func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUser, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.FullName,
+		&i.Avatar,
+		&i.Email,
+		&i.Phone,
+		&i.HashedPassword,
+		&i.UserRole,
+		&i.PasswordChangedAt,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getUserByPhone = `-- name: GetUserByPhone :one
+SELECT id, full_name, avatar, email, phone, hashed_password, user_role, password_changed_at, created_at
+FROM users
+WHERE phone = $1
+LIMIT 1
+`
+
+func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByPhone, phone)
 	var i User
 	err := row.Scan(
 		&i.ID,
